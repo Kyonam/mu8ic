@@ -26,7 +26,7 @@ interface MinimalistHeroProps {
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <a
         href={href}
-        className="text-sm font-medium tracking-widest text-foreground/60 transition-colors hover:text-foreground"
+        className="text-xs font-medium tracking-widest text-foreground/60 transition-colors hover:text-foreground"
     >
         {children}
     </a>

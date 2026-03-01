@@ -3,9 +3,11 @@
 import React from 'react';
 import { MinimalistHero } from '@/components/ui/minimalist-hero';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const { user, signOut } = useAuth();
+  const router = useRouter();
 
   const navLinks = [
     { label: 'FEATURES', href: '#' },
@@ -13,10 +15,14 @@ export default function Home() {
     { label: 'CONTACT', href: '#' },
   ];
 
+  if (user) {
+    navLinks.push({ label: 'WORKSPACE', href: '/workspace' });
+  }
+
   const handleSignOut = async (e: React.MouseEvent) => {
     e.preventDefault();
     await signOut();
-    window.location.reload(); // Simple refresh for auth state cleanup
+    window.location.reload();
   };
 
   return (
@@ -35,10 +41,10 @@ export default function Home() {
           navLinks={navLinks}
           mainText={
             user
-              ? `Welcome back, ${user.user_metadata?.full_name || user.email}! Ready to create your next viral soundtrack? Our AI is waiting for your story.`
+              ? `Welcome back, ${user.user_metadata?.full_name || user.email}! Your creative workspace is ready. Let's start generating your next viral soundtrack.`
               : "Create high-quality, royalty-free soundtracks for your YouTube videos in seconds. Our AI understands your content and generates the perfect mood, rhythm, and style to keep your audience engaged."
           }
-          getStartedLink={user ? "#generate" : "/auth"}
+          getStartedLink={user ? "/workspace" : "/auth"}
           imageSrc="https://ik.imagekit.io/fpxbgsota/image%2013.png?updatedAt=1753531863793"
           imageAlt="A portrait of a person in a black turtleneck, in profile."
           overlayText={{

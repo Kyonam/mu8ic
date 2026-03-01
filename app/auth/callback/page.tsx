@@ -14,7 +14,7 @@ export default function AuthCallback() {
                 console.error('Error handling auth callback:', error);
                 router.push('/auth');
             } else {
-                router.push('/');
+                router.push('/workspace');
             }
         };
 
