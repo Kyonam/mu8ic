@@ -5,6 +5,11 @@ import { MinimalistHero } from '@/components/ui/minimalist-hero';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { UserProfile } from '@/components/user-profile';
+import { ExampleSection } from '@/components/ui/example-section';
+import { FeatureSection } from '@/components/ui/feature-section';
+import { PricingSection } from '@/components/ui/pricing-section';
+import { CTASection } from '@/components/ui/cta-section';
+import { FooterSection } from '@/components/ui/footer-section';
 
 export default function Home() {
   const { user } = useAuth();
@@ -37,9 +42,14 @@ export default function Home() {
           imageAlt="A portrait of a person in a black turtleneck, in profile."
           overlayText={{
             part1: user ? 'hello' : 'AI music for',
-            part2: user ? (user.user_metadata?.full_name?.split(' ')[0].toLowerCase() || 'creator') : 'creators.',
+            part2: user ? (user.user_metadata?.full_name?.split(' ')[0].toLowerCase() || 'creator') : 'creators',
           }}
         />
+        <ExampleSection />
+        <FeatureSection />
+        <PricingSection />
+        <CTASection />
+        <FooterSection />
       </div>
     </main>
   );

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User as UserIcon, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { User as UserIcon, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -32,7 +32,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
             onMouseLeave={() => setIsProfileOpen(false)}
         >
             <motion.button
-                className="flex items-center space-x-3 rounded-full border border-white/10 bg-white/[0.05] p-1.5 pr-3 transition-all hover:bg-white/[0.1] backdrop-blur-md"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center space-x-3 rounded-full border border-foreground/10 bg-foreground/5 p-1.5 pr-3 transition-all hover:bg-foreground/10 backdrop-blur-md"
             >
                 <div className="h-7 w-7 overflow-hidden rounded-full border border-white/10 bg-gradient-to-tr from-yellow-400/80 to-orange-500/80">
                     {user?.user_metadata?.avatar_url ? (
@@ -47,10 +48,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                         </div>
                     )}
                 </div>
-                <span className="max-w-[100px] truncate text-[11px] font-semibold text-white/80">
+                <span className="max-w-[100px] truncate text-[11px] font-bold text-white/80">
                     {user?.user_metadata?.full_name?.split(' ')[0] || 'Member'}
                 </span>
-                <ChevronDown className={`h-3 w-3 text-white/40 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={cn("h-3 w-3 text-white/40 transition-transform duration-300", isProfileOpen && "rotate-180")} />
             </motion.button>
 
             <AnimatePresence>
@@ -68,12 +69,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ className }) => {
                                 <p className="mt-1 truncate text-xs font-medium text-white/60">{user?.email}</p>
                             </div>
 
-                            <Link href="/workspace" className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-xs font-medium text-white/60 transition-colors hover:bg-white/5 hover:text-white">
-                                <LayoutDashboard className="h-4 w-4" />
-                                <span>Go to Workspace</span>
-                            </Link>
 
-                            <div className="my-1 h-[1px] bg-white/5" />
 
                             <button
                                 onClick={handleSignOut}

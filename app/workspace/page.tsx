@@ -234,6 +234,8 @@ export default function WorkspacePage() {
                         onTogglePlay={togglePlay}
                         onDelete={handleDelete}
                         onRename={handleRename}
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
                     />
                 </div>
             </main>

@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { LucideIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LucideIcon, X, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Define the props interface for type safety and reusability
@@ -24,10 +24,11 @@ interface MinimalistHeroProps {
 }
 
 // Helper component for navigation links
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const NavLink = ({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: () => void }) => (
     <a
         href={href}
-        className="text-xs font-medium tracking-widest text-foreground/60 transition-colors hover:text-foreground"
+        onClick={onClick}
+        className="text-xs font-semibold tracking-widest text-foreground/60 transition-colors hover:text-foreground md:text-[10px] lg:text-xs"
     >
         {children}
     </a>
@@ -54,24 +55,28 @@ export const MinimalistHero = ({
     className,
     userProfile,
 }: MinimalistHeroProps) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <div
             className={cn(
-                'relative flex h-screen w-full flex-col items-center justify-between overflow-hidden bg-background p-8 font-sans md:p-12',
+                'relative flex min-h-screen w-full flex-col items-center justify-between overflow-hidden bg-background p-6 font-sans md:h-screen md:p-12',
                 className
             )}
         >
             {/* Header */}
-            <header className="z-30 flex w-full max-w-7xl items-center justify-between">
+            <header className="z-50 flex w-full max-w-7xl items-center justify-between">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="text-3xl font-normal tracking-wider font-schoolbell"
+                    className="text-2xl font-normal tracking-wider font-schoolbell md:text-3xl"
                 >
                     {logoText}
                 </motion.div>
-                <div className="hidden items-center space-x-8 md:flex">
+
+                {/* Desktop Nav */}
+                <div className="hidden items-center space-x-6 md:flex lg:space-x-8">
                     {navLinks.map((link) => (
                         <NavLink key={link.label} href={link.href}>
                             {link.label}
@@ -85,76 +90,117 @@ export const MinimalistHero = ({
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5, delay: 0.1 }}
-                            className="rounded-full bg-foreground px-5 py-2 text-xs font-semibold tracking-widest text-background transition-transform hover:scale-105 active:scale-95"
+                            className="rounded-full bg-foreground px-5 py-2 text-[10px] font-bold tracking-widest text-background transition-transform hover:scale-105 active:scale-95 lg:text-xs"
                         >
                             GET STARTED
                         </motion.a>
                     )}
                 </div>
+
+                {/* Mobile Menu Toggle */}
                 <motion.button
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col space-y-1.5 md:hidden"
-                    aria-label="Open menu"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground/5 md:hidden z-50 transition-colors active:bg-foreground/10"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                 >
-                    <span className="block h-0.5 w-6 bg-foreground"></span>
-                    <span className="block h-0.5 w-6 bg-foreground"></span>
-                    <span className="block h-0.5 w-5 bg-foreground"></span>
+                    {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </motion.button>
             </header>
 
-            {/* Main Content Area */}
-            <div className="relative grid w-full max-w-7xl flex-grow grid-cols-1 items-center md:grid-cols-3">
-                {/* Left Text Content */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1 }}
-                    className="z-20 order-2 flex flex-col items-center md:order-1 md:items-start text-center md:text-left"
-                >
-                    <p className="mx-auto max-w-xs text-sm leading-relaxed text-foreground/80 md:mx-0 font-sans">{mainText}</p>
-                    <motion.a
-                        href={getStartedLink}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="mt-6 inline-flex h-12 items-center justify-center rounded-sm bg-foreground px-8 text-sm font-bold tracking-widest text-background transition-all hover:shadow-lg"
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-background/95 p-8 backdrop-blur-xl md:hidden"
                     >
-                        GET STARTED
-                    </motion.a>
-                </motion.div>
+                        <nav className="flex flex-col items-center space-y-8 text-center">
+                            {navLinks.map((link) => (
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-2xl font-bold tracking-widest text-foreground uppercase"
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                            {userProfile ? (
+                                <div className="pt-4">{userProfile}</div>
+                            ) : (
+                                <a
+                                    href={getStartedLink}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="rounded-full bg-foreground px-10 py-4 text-sm font-bold tracking-widest text-background uppercase shadow-xl"
+                                >
+                                    GET STARTED
+                                </a>
+                            )}
+                        </nav>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                {/* Center Image with Circle */}
-                <div className="relative order-1 md:order-2 flex justify-center items-center h-full">
+            {/* Main Content Area */}
+            <div className="relative flex w-full max-w-7xl flex-grow flex-col items-center justify-center gap-y-12 md:gap-y-0 md:grid md:grid-cols-3 md:items-center">
+
+                {/* Image Section (Now below headline on mobile) */}
+                <div className="relative order-2 flex h-[35vh] w-full items-center justify-center overflow-visible md:order-2 md:h-full">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                        className="absolute z-0 h-[300px] w-[300px] rounded-full bg-yellow-400/90 md:h-[400px] md:w-[400px] lg:h-[500px] lg:w-[500px]"
+                        className="absolute z-0 h-[220px] w-[220px] rounded-full bg-[#FECD00] md:h-[300px] md:w-[300px] lg:h-[450px] lg:w-[450px]"
                     ></motion.div>
                     <motion.img
                         src={imageSrc}
                         alt={imageAlt}
-                        className="relative z-10 h-auto w-56 object-cover md:w-64 scale-150 lg:w-72"
-                        initial={{ opacity: 0, y: 50 }}
+                        className="relative z-10 h-auto w-40 object-cover scale-125 md:w-56 md:scale-150 lg:w-72"
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.onerror = null;
-                            target.src = `https://placehold.co/400x600/eab308/ffffff?text=Image+Not+Found`;
+                            target.src = `https://placehold.co/400x600/eab308/ffffff?text=Creator`;
                         }}
                     />
                 </div>
 
-                {/* Right Text */}
+                {/* Left Text Content */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.2 }}
-                    className="z-20 order-3 flex items-center justify-center text-center md:justify-start"
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    className="z-20 order-3 mt-12 flex flex-col items-center text-center md:order-1 md:mt-0 md:items-start md:text-left"
                 >
-                    <h1 className="text-6xl text-foreground md:text-7xl lg:text-8xl font-pirata uppercase leading-[0.8] tracking-tight">
+                    <p className="max-w-xs text-xs leading-relaxed text-foreground/70 md:text-sm lg:text-base font-sans">
+                        {mainText}
+                    </p>
+                    <motion.a
+                        href={getStartedLink}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="mt-6 inline-flex h-11 items-center justify-center rounded-sm bg-foreground px-6 text-xs font-bold tracking-widest text-background transition-all hover:shadow-lg md:h-12 md:px-8 md:text-sm"
+                    >
+                        GET STARTED
+                    </motion.a>
+                </motion.div>
+
+                {/* Right Headline Text */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 1 }}
+                    className="z-20 order-1 mt-6 flex items-center justify-center text-center md:order-3 md:mt-0 md:justify-end md:text-right"
+                >
+                    <h1 className="text-5xl text-foreground sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-pirata uppercase leading-[0.85] tracking-tight">
                         {overlayText.part1}
                         <br />
                         {overlayText.part2}
@@ -163,28 +209,30 @@ export const MinimalistHero = ({
             </div>
 
             {/* Footer Elements */}
-            {(socialLinks.length > 0 || locationText) && (
-                <footer className="z-30 flex w-full max-w-7xl items-center justify-between">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.2 }}
-                        className="flex items-center space-x-4"
-                    >
-                        {socialLinks.map((link, index) => (
+            <footer className="z-30 mt-8 flex w-full max-w-7xl items-center justify-between border-t border-foreground/5 pt-6 md:mt-0 md:border-none md:pt-0">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 1.2 }}
+                    className="flex items-center space-x-5"
+                >
+                    {socialLinks.length > 0 ? (
+                        socialLinks.map((link, index) => (
                             <SocialIcon key={index} href={link.href} icon={link.icon} />
-                        ))}
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 1.3 }}
-                        className="text-sm font-medium text-foreground/80"
-                    >
-                        {locationText}
-                    </motion.div>
-                </footer>
-            )}
+                        ))
+                    ) : (
+                        <div className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase">mu8ic labs</div>
+                    )}
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 1.3 }}
+                    className="text-[10px] font-bold tracking-widest text-foreground/40 uppercase md:text-xs"
+                >
+                    {locationText || "Based in Earth"}
+                </motion.div>
+            </footer>
         </div>
     );
 };
