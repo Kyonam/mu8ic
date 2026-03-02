@@ -4,9 +4,10 @@ import React from 'react';
 import { MinimalistHero } from '@/components/ui/minimalist-hero';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { UserProfile } from '@/components/user-profile';
 
 export default function Home() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   const navLinks = [
@@ -19,26 +20,13 @@ export default function Home() {
     navLinks.push({ label: 'WORKSPACE', href: '/workspace' });
   }
 
-  const handleSignOut = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    await signOut();
-    window.location.reload();
-  };
-
   return (
     <main>
       <div className="relative">
-        {user && (
-          <button
-            onClick={handleSignOut}
-            className="absolute right-32 top-10 z-50 text-[10px] uppercase tracking-widest text-[#171717]/40 hover:text-[#171717] transition-colors"
-          >
-            Sign Out
-          </button>
-        )}
         <MinimalistHero
           logoText="mu8ic"
           navLinks={navLinks}
+          userProfile={user ? <UserProfile className="!text-foreground" /> : undefined}
           mainText={
             user
               ? `Welcome back, ${user.user_metadata?.full_name || user.email}! Your creative workspace is ready. Let's start generating your next viral soundtrack.`

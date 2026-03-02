@@ -31,7 +31,6 @@ export default function AuthPage() {
                         <div className="mb-4 font-schoolbell text-3xl font-bold tracking-wider text-white">
                             mu8ic
                         </div>
-                        <h1 className="text-lg font-semibold text-white/90 tracking-tight">Welcome back</h1>
                         <p className="mt-1 text-[11px] uppercase tracking-widest text-gray-500">
                             Sign in to continue
                         </p>
